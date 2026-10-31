@@ -1,158 +1,299 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>מפעל עוגיות המזל</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #fdf6ec;
-        color: #3b2a1a;
-        display: flex;
-        justify-content: center;
-        margin: 0;
-        padding: 40px 16px;
-      }
-      .card {
-        background: #fff;
-        width: 100%;
-        max-width: 540px;
-        border-radius: 16px;
-        padding: 32px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        text-align: center;
-      }
-      h1 {
-        margin-top: 0;
-      }
-      button {
-        font-size: 20px;
-        padding: 12px 28px;
-        border: none;
-        border-radius: 10px;
-        background: #d97706;
-        color: #fff;
-        cursor: pointer;
-      }
-      button:hover {
-        background: #b45309;
-      }
-      #fortune {
-        font-size: 22px;
-        min-height: 60px;
-        margin: 24px 0 8px;
-      }
-      .meta {
-        color: #7c6a58;
-      }
-      .auto {
-        display: block;
-        margin-top: 12px;
-        color: #7c6a58;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-      }
-      th,
-      td {
-        border-bottom: 1px solid #eee;
-        padding: 8px;
-      }
-      td.pod {
-        direction: ltr;
-        text-align: right;
-        font-family: monospace;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מפעל עוגיות המזל</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      color: #4a2e14;
+      background:
+        radial-gradient(circle, rgba(255, 255, 255, 0.55) 2px, transparent 3px) 0 0 / 36px 36px,
+        linear-gradient(180deg, #fbe9d0 0%, #f1c995 100%);
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .bakery { width: 100%; max-width: 620px; }
+
+    header { text-align: center; margin-bottom: 18px; }
+    h1 { margin: 0; font-size: 34px; }
+    .subtitle { margin: 6px 0 0; color: #8a6440; }
+
+    .card {
+      background: #fffaf2;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(120, 70, 20, 0.15);
+      margin-bottom: 20px;
+    }
+
+    /* העוגייה */
+    .stage { text-align: center; }
+
+    .cookie {
+      width: 240px;
+      display: block;
+      margin: 0 auto;
+      cursor: pointer;
+      overflow: visible;
+      transition: filter 0.3s;
+    }
+
+    .half {
+      transition: transform 0.35s ease;
+      transform-box: view-box;
+      transform-origin: 120px 110px;
+    }
+
+    .open .half.left  { transform: translate(-24px, 6px) rotate(-18deg); }
+    .open .half.right { transform: translate(24px, 6px) rotate(18deg); }
+
+    .burnt .cookie { filter: grayscale(1) brightness(0.45); }
+
+    /* פתק המזל */
+    .slip {
+      margin: 4px auto 0;
+      max-width: 440px;
+      min-height: 110px;
+      background: #fffef9;
+      border: 1px solid #ead9b8;
+      border-radius: 6px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      opacity: 0;
+      transform: translateY(-24px) scaleY(0.6);
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+
+    .open .slip { opacity: 1; transform: none; }
+
+    .slip .text { font-size: 22px; line-height: 1.4; margin: 0 0 10px; }
+    .slip .meta { font-size: 13px; color: #8a6440; margin: 0; }
+
+    .hint { color: #8a6440; margin: 10px 0 0; }
+
+    /* כפתורים */
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 12px;
+      background: #d97706;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #a45a05;
+    }
+    button:hover { background: #c46a05; }
+    button:active { transform: translateY(2px); box-shadow: 0 2px 0 #a45a05; }
+
+    .auto { color: #6b4a2a; cursor: pointer; }
+
+    /* קופסת העוגיות */
+    h2 { margin: 0 0 4px; font-size: 22px; }
+    #total { margin: 0 0 16px; color: #8a6440; }
+
+    .pod-row { margin-bottom: 14px; }
+
+    .pod-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .pod-name { flex: 1; font-family: monospace; font-size: 14px; }
+
+    .badge {
+      font-size: 12px;
+      padding: 2px 10px;
+      border-radius: 10px;
+      background: #fde7c4;
+      color: #8a4b0f;
+    }
+    .badge.v2 { background: #d8f0dc; color: #1f6a35; }
+
+    .bar {
+      height: 10px;
+      background: #f0e2cc;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #f3b45a, #d98a2b);
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="bakery">
+    <header>
       <h1>🥠 מפעל עוגיות המזל</h1>
+      <p class="subtitle">כל עוגייה נאפית ב-Pod אחר בקלאסטר</p>
+    </header>
 
-      <button id="open">פתחו עוגייה</button>
-      <label class="auto">
-        <input type="checkbox" id="auto" /> אפייה אוטומטית (כל חצי שנייה)
-      </label>
+    <div class="card">
+      <div class="stage" id="stage">
+        <svg class="cookie" id="cookie" viewBox="0 0 240 160" role="img" aria-label="עוגיית מזל">
+          <defs>
+            <linearGradient id="dough" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f8cf7a" />
+              <stop offset="1" stop-color="#d98a2b" />
+            </linearGradient>
+          </defs>
 
-      <p id="fortune">לחצו על הכפתור כדי לפתוח עוגייה</p>
-      <p class="meta">
-        נאפתה ב-Pod: <bdi id="pod">-</bdi> &nbsp;|&nbsp; גרסה:
-        <bdi id="version">-</bdi>
-      </p>
+          <g class="half left">
+            <path d="M120 40 C 80 28, 28 55, 30 100 C 32 122, 70 126, 120 110 Z"
+                  fill="url(#dough)" stroke="#b06a1c" stroke-width="2" />
+            <path d="M118 52 C 92 62, 68 86, 60 110"
+                  fill="none" stroke="#b06a1c" stroke-width="2" opacity="0.45" />
+          </g>
 
-      <h2>כמה עוגיות אפה כל Pod</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Pod</th>
-            <th>גרסה</th>
-            <th>עוגיות</th>
-          </tr>
-        </thead>
-        <tbody id="counts"></tbody>
-      </table>
+          <g class="half right">
+            <g transform="translate(240, 0) scale(-1, 1)">
+              <path d="M120 40 C 80 28, 28 55, 30 100 C 32 122, 70 126, 120 110 Z"
+                    fill="url(#dough)" stroke="#b06a1c" stroke-width="2" />
+              <path d="M118 52 C 92 62, 68 86, 60 110"
+                    fill="none" stroke="#b06a1c" stroke-width="2" opacity="0.45" />
+            </g>
+          </g>
+        </svg>
+
+        <div class="slip">
+          <p class="text" id="fortune"></p>
+          <p class="meta">
+            נאפתה ב-Pod: <bdi id="pod">-</bdi>
+            &nbsp;·&nbsp;
+            גרסה: <bdi id="version">-</bdi>
+          </p>
+        </div>
+
+        <p class="hint" id="hint">לחצו על העוגייה כדי לפתוח אותה</p>
+      </div>
+
+      <div class="controls">
+        <button id="open">פתחו עוגייה</button>
+        <label class="auto">
+          <input type="checkbox" id="auto"> אפייה אוטומטית
+        </label>
+      </div>
     </div>
 
-    <script>
-      const counts = {};
+    <div class="card">
+      <h2>קופסת העוגיות</h2>
+      <p id="total">עוד לא נאפו עוגיות</p>
+      <div id="stats"></div>
+    </div>
+  </div>
 
-      async function openCookie() {
-        try {
-          const res = await fetch("/api/fortune");
-          if (!res.ok) {
-            throw new Error("HTTP " + res.status);
-          }
-          const data = await res.json();
+  <script>
+    const counts = {};
+    let total = 0;
 
-          document.getElementById("fortune").textContent = data.fortune;
-          document.getElementById("pod").textContent = data.pod;
-          document.getElementById("version").textContent = data.version;
+    const stage = document.getElementById('stage');
 
-          const key = data.pod + "|" + data.version;
-          counts[key] = (counts[key] || 0) + 1;
-          renderCounts();
-        } catch (err) {
-          document.getElementById("fortune").textContent =
-            "העוגייה נשרפה 🔥 (" + err.message + ")";
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function openCookie() {
+      document.getElementById('hint').style.display = 'none';
+      stage.classList.remove('open', 'burnt');
+
+      try {
+        const [res] = await Promise.all([fetch('/api/fortune'), wait(180)]);
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status);
         }
+        const data = await res.json();
+
+        document.getElementById('fortune').textContent = data.fortune;
+        document.getElementById('pod').textContent = data.pod;
+        document.getElementById('version').textContent = data.version;
+        stage.classList.add('open');
+
+        const key = data.pod + '|' + data.version;
+        counts[key] = (counts[key] || 0) + 1;
+        total++;
+        renderStats();
+      } catch (err) {
+        document.getElementById('fortune').textContent = 'העוגייה נשרפה 🔥 (' + err.message + ')';
+        document.getElementById('pod').textContent = '-';
+        document.getElementById('version').textContent = '-';
+        stage.classList.add('open', 'burnt');
+      }
+    }
+
+    function renderStats() {
+      const box = document.getElementById('stats');
+      box.innerHTML = '';
+      const max = Math.max(...Object.values(counts));
+
+      for (const key of Object.keys(counts)) {
+        const [pod, version] = key.split('|');
+        const n = counts[key];
+
+        const row = document.createElement('div');
+        row.className = 'pod-row';
+
+        const head = document.createElement('div');
+        head.className = 'pod-head';
+
+        const name = document.createElement('bdi');
+        name.className = 'pod-name';
+        name.textContent = pod;
+
+        const badge = document.createElement('span');
+        badge.className = 'badge ' + version;
+        badge.textContent = version;
+
+        const count = document.createElement('strong');
+        count.textContent = n + ' 🥠';
+
+        head.append(name, badge, count);
+
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        const fill = document.createElement('span');
+        fill.style.width = (n / max) * 100 + '%';
+        bar.append(fill);
+
+        row.append(head, bar);
+        box.append(row);
       }
 
-      function renderCounts() {
-        const tbody = document.getElementById("counts");
-        tbody.innerHTML = "";
-        for (const key of Object.keys(counts)) {
-          const [pod, version] = key.split("|");
-          const row = document.createElement("tr");
+      document.getElementById('total').textContent = 'סה"כ נאפו ' + total + ' עוגיות';
+    }
 
-          const podCell = document.createElement("td");
-          podCell.className = "pod";
-          podCell.textContent = pod;
+    let timer = null;
 
-          const versionCell = document.createElement("td");
-          versionCell.textContent = version;
+    document.getElementById('open').addEventListener('click', openCookie);
+    document.getElementById('cookie').addEventListener('click', openCookie);
 
-          const countCell = document.createElement("td");
-          countCell.textContent = counts[key];
-
-          row.append(podCell, versionCell, countCell);
-          tbody.append(row);
-        }
+    document.getElementById('auto').addEventListener('change', (event) => {
+      if (event.target.checked) {
+        timer = setInterval(openCookie, 600);
+      } else {
+        clearInterval(timer);
       }
-
-      let timer = null;
-
-      document.getElementById("open").addEventListener("click", openCookie);
-
-      document.getElementById("auto").addEventListener("change", (event) => {
-        if (event.target.checked) {
-          timer = setInterval(openCookie, 500);
-        } else {
-          clearInterval(timer);
-        }
-      });
-    </script>
-  </body>
+    });
+  </script>
+</body>
 </html>
