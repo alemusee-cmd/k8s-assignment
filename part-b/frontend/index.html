@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>מפעל עוגיות המזל</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #fdf6ec;
+        color: #3b2a1a;
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        padding: 40px 16px;
+      }
+      .card {
+        background: #fff;
+        width: 100%;
+        max-width: 540px;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        text-align: center;
+      }
+      h1 {
+        margin-top: 0;
+      }
+      button {
+        font-size: 20px;
+        padding: 12px 28px;
+        border: none;
+        border-radius: 10px;
+        background: #d97706;
+        color: #fff;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #b45309;
+      }
+      #fortune {
+        font-size: 22px;
+        min-height: 60px;
+        margin: 24px 0 8px;
+      }
+      .meta {
+        color: #7c6a58;
+      }
+      .auto {
+        display: block;
+        margin-top: 12px;
+        color: #7c6a58;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #eee;
+        padding: 8px;
+      }
+      td.pod {
+        direction: ltr;
+        text-align: right;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>🥠 מפעל עוגיות המזל</h1>
+
+      <button id="open">פתחו עוגייה</button>
+      <label class="auto">
+        <input type="checkbox" id="auto" /> אפייה אוטומטית (כל חצי שנייה)
+      </label>
+
+      <p id="fortune">לחצו על הכפתור כדי לפתוח עוגייה</p>
+      <p class="meta">
+        נאפתה ב-Pod: <bdi id="pod">-</bdi> &nbsp;|&nbsp; גרסה:
+        <bdi id="version">-</bdi>
+      </p>
+
+      <h2>כמה עוגיות אפה כל Pod</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Pod</th>
+            <th>גרסה</th>
+            <th>עוגיות</th>
+          </tr>
+        </thead>
+        <tbody id="counts"></tbody>
+      </table>
+    </div>
+
+    <script>
+      const counts = {};
+
+      async function openCookie() {
+        try {
+          const res = await fetch("/api/fortune");
+          if (!res.ok) {
+            throw new Error("HTTP " + res.status);
+          }
+          const data = await res.json();
+
+          document.getElementById("fortune").textContent = data.fortune;
+          document.getElementById("pod").textContent = data.pod;
+          document.getElementById("version").textContent = data.version;
+
+          const key = data.pod + "|" + data.version;
+          counts[key] = (counts[key] || 0) + 1;
+          renderCounts();
+        } catch (err) {
+          document.getElementById("fortune").textContent =
+            "העוגייה נשרפה 🔥 (" + err.message + ")";
+        }
+      }
+
+      function renderCounts() {
+        const tbody = document.getElementById("counts");
+        tbody.innerHTML = "";
+        for (const key of Object.keys(counts)) {
+          const [pod, version] = key.split("|");
+          const row = document.createElement("tr");
+
+          const podCell = document.createElement("td");
+          podCell.className = "pod";
+          podCell.textContent = pod;
+
+          const versionCell = document.createElement("td");
+          versionCell.textContent = version;
+
+          const countCell = document.createElement("td");
+          countCell.textContent = counts[key];
+
+          row.append(podCell, versionCell, countCell);
+          tbody.append(row);
+        }
+      }
+
+      let timer = null;
+
+      document.getElementById("open").addEventListener("click", openCookie);
+
+      document.getElementById("auto").addEventListener("change", (event) => {
+        if (event.target.checked) {
+          timer = setInterval(openCookie, 500);
+        } else {
+          clearInterval(timer);
+        }
+      });
+    </script>
+  </body>
+</html>
